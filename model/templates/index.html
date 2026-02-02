@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spam Detector</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 450px; text-align: center; }
+        textarea { width: 100%; height: 150px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; box-sizing: border-box; resize: none; outline: none; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        button { flex: 2; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; border: none; transition: 0.3s; }
+        .btn-check { background-color: #007bff; color: white; }
+        .btn-check:hover { background-color: #0056b3; }
+        .btn-clear { background-color: #6c757d; color: white; flex: 1; }
+        .btn-clear:hover { background-color: #5a6268; }
+        #result { margin-top: 25px; font-size: 1.8rem; font-weight: 800; min-height: 40px; }
+        .spam { color: #e74c3c; }
+        .ham { color: #2ecc71; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📧 Spam Detector</h2>
+    <textarea id="emailInput" placeholder="Paste message here..."></textarea>
+    <div class="btn-group">
+        <button class="btn-check" onclick="checkEmail()">Check</button>
+        <button class="btn-clear" onclick="clearAll()">Clear</button>
+    </div>
+    <div id="result"></div>
+</div>
+
+<script>
+    async function checkEmail() {
+        const text = document.getElementById('emailInput').value;
+        const resultDiv = document.getElementById('result');
+        if (!text.trim()) return;
+
+        resultDiv.innerText = "Analyzing...";
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        });
+        const data = await response.json();
+        resultDiv.innerHTML = `Result: <span class="${data.prediction.toLowerCase()}">${data.prediction}</span>`;
+    }
+
+    function clearAll() {
+        document.getElementById('emailInput').value = "";
+        document.getElementById('result').innerText = "";
+    }
+</script>
+</body>
+</html>
